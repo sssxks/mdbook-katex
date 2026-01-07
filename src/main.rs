@@ -1,7 +1,7 @@
 use clap::{crate_version, Arg, ArgMatches, Command};
-use mdbook_katex::{init_tracing, preprocess::KatexProcessor};
+use mdbook_katex::{init_tracing, parse_input_compat, preprocess::KatexProcessor};
 use mdbook_preprocessor::errors::{Error, Result};
-use mdbook_preprocessor::{parse_input, Preprocessor};
+use mdbook_preprocessor::Preprocessor;
 use std::io;
 use tracing::*;
 
@@ -46,7 +46,7 @@ fn handle_supports(pre: &dyn Preprocessor, sub_args: &ArgMatches) -> Result<()> 
 
 /// Preprocess `book` using `pre` and print it out.
 fn handle_preprocessing(pre: &dyn Preprocessor) -> Result<()> {
-    let (ctx, book) = parse_input(io::stdin())?;
+    let (ctx, book) = parse_input_compat(io::stdin())?;
     check_mdbook_version(&ctx.mdbook_version);
 
     let processed_book = pre.run(&ctx, book)?;

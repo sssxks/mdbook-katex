@@ -15,6 +15,7 @@ fn test_support_html() {
 }
 
 mod escape;
+mod input;
 
 #[cfg(feature = "pre-render")]
 mod render;

@@ -116,6 +116,20 @@ fn test_macro_file_loading() {
 }
 
 #[test]
+fn test_backslash_renders_without_broken_html() {
+    let raw_content = r"Right and left: $L / R$ and $R \backslash L$.";
+    let (_stylesheet_header, rendered_content) = test_render(raw_content);
+    debug_assert!(
+        !rendered_content.contains("&lt;/span&gt;"),
+        "found escaped closing tag in KaTeX output: {rendered_content}"
+    );
+    debug_assert!(
+        rendered_content.contains("∖"),
+        "expected a backslash-like glyph in output: {rendered_content}"
+    );
+}
+
+#[test]
 fn test_rendering_table_with_math() {
     let raw_content = r"| Syntax | Description |
 | --- | ----------- |
@@ -196,6 +210,31 @@ fn test_rendering_delimiter_in_inline_code_when_block_delimiter_starts_with_back
         test_render_with_cfg(&[raw_content], HashMap::new(), cfg);
     let expected_output = stylesheet_header + raw_content;
     debug_assert_eq!(expected_output, rendered_content.pop().unwrap());
+}
+
+#[test]
+fn test_rendering_display_math_inside_blockquote() {
+    let raw_content = "> $$\n> x\n> $$\n";
+    let (_, rendered_content) = test_render(raw_content);
+    debug_assert!(
+        !rendered_content.contains("&gt;"),
+        "blockquote prefix `>` should not end up in KaTeX HTML"
+    );
+}
+
+#[test]
+fn test_rendering_display_math_inside_blockquote_include_src() {
+    let raw_content = "> $$\n> x\n> $$\n";
+    let cfg = KatexConfig {
+        include_src: true,
+        ..KatexConfig::default()
+    };
+    let (_, mut rendered) = test_render_with_cfg(&[raw_content], HashMap::new(), cfg);
+    let rendered_content = rendered.pop().unwrap();
+    debug_assert!(
+        !rendered_content.contains("&#10;>"),
+        "blockquote prefix `>` should not be included in katex-src"
+    );
 }
 
 #[test]

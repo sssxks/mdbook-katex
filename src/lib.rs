@@ -24,6 +24,7 @@ use {
 
 pub mod cfg;
 pub mod escape;
+pub mod input;
 pub mod preprocess;
 pub mod scan;
 
@@ -32,6 +33,8 @@ pub mod render;
 
 #[cfg(feature = "pre-render")]
 pub use render::*;
+
+pub use input::parse_input_compat;
 
 #[cfg(test)]
 mod tests;
