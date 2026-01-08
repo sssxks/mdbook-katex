@@ -5,9 +5,9 @@ fn main() {
     let extra_opts = cfg.build_extra_opts();
     let (inline_opts, display_opts) = cfg.build_opts("");
     let stylesheet_header = KATEX_HEADER.to_owned();
-    
+
     let raw_content = r"Same pattern shows $\overline{INT\_EMPTY_{CFG}}$ is r.e., hence $INT\_EMPTY_{CFG}$ is co-r.e.";
-    
+
     let rendered = process_chapter_prerender(
         raw_content,
         inline_opts,
@@ -15,7 +15,7 @@ fn main() {
         &stylesheet_header,
         &extra_opts,
     );
-    
+
     println!("INPUT: {}", raw_content);
     println!("\nOUTPUT LENGTH: {}", rendered.len());
     println!("\nOUTPUT:");

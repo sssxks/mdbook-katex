@@ -239,7 +239,6 @@ fn test_rendering_display_math_inside_blockquote_include_src() {
 
 #[test]
 fn test_invalid_expr_inline() {
-    init_tracing();
     let raw_content = r"$\<$";
     let (stylesheet_header, rendered_content) = test_render(raw_content);
     let expected_output = stylesheet_header + raw_content;
@@ -248,7 +247,6 @@ fn test_invalid_expr_inline() {
 
 #[test]
 fn test_invalid_expr_display() {
-    init_tracing();
     let raw_content = r"$$ \< $$";
     let (stylesheet_header, rendered_content) = test_render(raw_content);
     let expected_output = stylesheet_header + raw_content;
@@ -336,7 +334,10 @@ fn test_overline_with_underscore_subscript() {
     let (_stylesheet_header, rendered_content) = test_render(raw_content);
 
     // Verify both math expressions are rendered
-    debug_assert!(rendered_content.contains("katex"), "Should have KaTeX rendered output");
+    debug_assert!(
+        rendered_content.contains("katex"),
+        "Should have KaTeX rendered output"
+    );
 
     // The key assertion: underscores should be escaped as HTML entities to prevent
     // the markdown parser from interpreting them as emphasis markers

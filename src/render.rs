@@ -65,7 +65,10 @@ fn strip_markdown_blockquote_prefix(item: &str) -> Cow<'_, str> {
 ///
 /// This function writes into `scratch` only if a rewrite is needed; otherwise it returns the
 /// original `rendered_html` to avoid copying.
-fn normalize_katex_html_for_markdown<'a>(rendered_html: &'a str, scratch: &'a mut String) -> &'a str {
+fn normalize_katex_html_for_markdown<'a>(
+    rendered_html: &'a str,
+    scratch: &'a mut String,
+) -> &'a str {
     let mut in_tag = false;
     let mut cursor = 0;
     let mut changed = false;

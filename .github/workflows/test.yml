@@ -89,14 +89,15 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: |
-            --target x86_64-pc-windows-gnu
-            --no-run
-          # Cannot run because not on Windows.
+      - name: Install MinGW (linker)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends mingw-w64
+
+      - name: Build Windows (GNU) test binaries
+        run: |
+          cargo test --target x86_64-pc-windows-gnu --no-run
+        # Cannot run because not on Windows.
 
   fmt-clippy:
     runs-on: ubuntu-22.04
