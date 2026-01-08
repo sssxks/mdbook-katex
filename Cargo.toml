@@ -12,16 +12,16 @@ readme = "README.md"
 repository = "https://github.com/lzanini/mdbook-katex"
 
 [dependencies]
-clap = { version = "4.5.53", features = ["cargo"] }
-mdbook-preprocessor = {version = "0.5.1"}
+clap = { version = "4.5.54", features = ["cargo"] }
+mdbook-preprocessor = {version = "0.5.2"}
 serde = "1.0.228"
 serde_derive = "1.0"
-serde_json = "1.0.145"
-toml = "0.9.8"
-tracing = { version = "0.1.41", default-features = false, features = [
+serde_json = "1.0.149"
+toml = "0.9.10"
+tracing = { version = "0.1.44", default-features = false, features = [
     "attributes",
 ] }
-tracing-subscriber = { version = "0.3.20", default-features = false, features = [
+tracing-subscriber = { version = "0.3.22", default-features = false, features = [
     "ansi",
     "env-filter",
     "fmt",
