@@ -330,5 +330,39 @@ fn test_inline_rendering_w_custom_delimiter() {
     debug_assert_eq!(expected_output, rendered_content[0]);
 }
 
+#[test]
+fn test_overline_with_underscore_subscript() {
+    let raw_content = r"Same pattern shows $\overline{INT\_EMPTY_{CFG}}$ is r.e., hence $INT\_EMPTY_{CFG}$ is co-r.e.";
+    let (_stylesheet_header, rendered_content) = test_render(raw_content);
+
+    // Verify both math expressions are rendered
+    debug_assert!(rendered_content.contains("katex"), "Should have KaTeX rendered output");
+
+    // The key assertion: underscores should be escaped as HTML entities to prevent
+    // the markdown parser from interpreting them as emphasis markers
+    debug_assert!(
+        rendered_content.contains("&#95;"),
+        "KaTeX output should escape underscores as HTML entities (&#95;).\nOutput: {}",
+        rendered_content
+    );
+
+    // Verify that we have at least 2 escaped underscores (one for each math expression)
+    let entity_count = rendered_content.matches("&#95;").count();
+    debug_assert!(
+        entity_count >= 2,
+        "Should have at least 2 escaped underscores (one for each math expression).\nFound {} entities.\nOutput: {}",
+        entity_count,
+        rendered_content
+    );
+
+    // Ensure the plain text between the two formulas isn't swallowed into KaTeX output due to
+    // markdown emphasis parsing.
+    debug_assert!(
+        rendered_content.contains(r#"</span> is r.e., hence <span class="katex">"#),
+        "Text between the two formulas should remain outside the KaTeX HTML spans.\nOutput: {}",
+        rendered_content
+    );
+}
+
 #[cfg(not(feature = "duktape"))]
 mod not_duktape;
