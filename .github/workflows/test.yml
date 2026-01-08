@@ -7,22 +7,23 @@ jobs:
   test-musl:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          target: x86_64-unknown-linux-musl
-          override: true
+          targets: x86_64-unknown-linux-musl
+
+      - name: Install cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross@0.2.5
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: |
-            --target x86_64-unknown-linux-musl
+      - name: Run tests (musl)
+        run: cross test --target x86_64-unknown-linux-musl
 
   test-ubuntu:
     runs-on: ubuntu-22.04
@@ -33,13 +34,12 @@ jobs:
           - beta
           - nightly
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: ${{ matrix.rust }}
-          override: true
 
       - uses: Swatinem/rust-cache@v2
 
@@ -48,13 +48,12 @@ jobs:
   test-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       - uses: Swatinem/rust-cache@v2
 
@@ -63,14 +62,13 @@ jobs:
   test-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: x86_64-pc-windows-msvc
-          override: true
+          targets: x86_64-pc-windows-msvc
 
       - uses: Swatinem/rust-cache@v2
 
@@ -79,13 +77,13 @@ jobs:
   test-windows-from-ubuntu:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          target: x86_64-pc-windows-gnu
-          override: true
+          targets: x86_64-pc-windows-gnu
 
       - uses: Swatinem/rust-cache@v2
 
@@ -102,13 +100,12 @@ jobs:
   fmt-clippy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          override: true
           components: clippy, rustfmt
 
       - uses: Swatinem/rust-cache@v2
@@ -120,4 +117,7 @@ jobs:
         run: RUSTFLAGS="-Dwarnings" cargo clippy
 
       - name: check Cargo.lock
-        run: cargo update --locked
+        # `cargo update --locked` fails whenever *any* newer compatible dependency exists,
+        # which makes CI flaky. `cargo metadata --locked` fails only when the lockfile is
+        # actually out-of-date with respect to Cargo.toml (i.e. would require a lock update).
+        run: cargo metadata --locked --format-version 1 > /dev/null

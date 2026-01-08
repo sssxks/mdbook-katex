@@ -26,9 +26,17 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Run release-plz
-        uses: MarcoIeni/release-plz-action@v0.5
+        uses: MarcoIeni/release-plz-action@v0.5.120
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_CREDENTIALS }}
+          # If the repo has Settings → Actions → General → Workflow permissions:
+          # - "Read and write permissions" enabled, and
+          # - "Allow GitHub Actions to create and approve pull requests" enabled,
+          # the built-in `GITHUB_TOKEN` is enough.
+          #
+          # Otherwise GitHub will return 403 ("GitHub Actions is not permitted to create or approve pull requests").
+          # In that case, create a PAT with `repo` scope and store it as `RELEASE_PLZ_TOKEN`.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN || github.token }}
+          # Keep backward compatibility with the existing secret name.
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN || secrets.CARGO_CREDENTIALS }}
         with:
           project_manifest: Cargo.toml

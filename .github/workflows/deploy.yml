@@ -17,15 +17,13 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: x86_64-pc-windows-msvc
-          override: true
+          targets: x86_64-pc-windows-msvc
 
       - uses: Swatinem/rust-cache@v2
 
@@ -38,7 +36,7 @@ jobs:
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create zip
         run: |
@@ -56,31 +54,29 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install x86_64-pc-windows-gnu
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: x86_64-pc-windows-gnu
-          override: true
+          targets: x86_64-pc-windows-gnu
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
+      - name: Install cross
+        uses: taiki-e/install-action@v2
         with:
-          use-cross: true
-          command: build
-          args: |
-            --release
-            --target x86_64-pc-windows-gnu
+          tool: cross@0.2.5
+
+      - name: Build mdbook-katex (Windows GNU)
+        run: cross build --release --target x86_64-pc-windows-gnu
 
       - name: Get the version
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tar
         run: |
@@ -100,15 +96,13 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install x86_64-unknown-linux-gnu target
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: x86_64-unknown-linux-gnu
-          override: true
+          targets: x86_64-unknown-linux-gnu
 
       - uses: Swatinem/rust-cache@v2
 
@@ -120,7 +114,7 @@ jobs:
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tar
         run: |
@@ -141,31 +135,29 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install x86_64-unknown-linux-musl
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: x86_64-unknown-linux-musl
-          override: true
+          targets: x86_64-unknown-linux-musl
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
+      - name: Install cross
+        uses: taiki-e/install-action@v2
         with:
-          use-cross: true
-          command: build
-          args: |
-            --release
-            --target x86_64-unknown-linux-musl
+          tool: cross@0.2.5
+
+      - name: Build mdbook-katex (musl)
+        run: cross build --release --target x86_64-unknown-linux-musl
 
       - name: Get the version
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tar
         run: |
@@ -185,15 +177,13 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable-x86_64-apple-darwin
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: x86_64-apple-darwin
-          override: true
+          targets: x86_64-apple-darwin
 
       - uses: Swatinem/rust-cache@v2
 
@@ -205,7 +195,7 @@ jobs:
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tar for x86_64-apple-darwin
         run: |
@@ -224,15 +214,13 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable-aarch64-apple-darwin
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          target: aarch64-apple-darwin
-          override: true
+          targets: aarch64-apple-darwin
 
       - uses: Swatinem/rust-cache@v2
 
@@ -244,7 +232,7 @@ jobs:
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tar for aarch64-apple-darwin
         run: |
@@ -274,7 +262,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -283,20 +271,18 @@ jobs:
           merge-multiple: true
 
       - name: Install Rust stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       - name: Get the version
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create a release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.tagName.outputs.version }}-binaries
           files: |
