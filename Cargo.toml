@@ -12,7 +12,7 @@ readme = "README.md"
 repository = "https://github.com/lzanini/mdbook-katex"
 
 [dependencies]
-clap = { version = "4.5.54", features = ["cargo"] }
+clap = { version = "4.5.57", features = ["cargo"] }
 mdbook-preprocessor = {version = "0.5.2"}
 serde = "1.0.228"
 serde_derive = "1.0"
