@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0-alpha.1](https://github.com/sssxks/mdbook-katex/compare/v0.10.0-alpha...v0.10.0-alpha.1) - 2026-02-16
+
+### Fixed
+
+- fix ci again
+- fix _
+- fixed blockquote
+
+### Other
+
+- Bump toml from 0.9.10+spec-1.1.0 to 1.0.1+spec-1.1.0
+- less noise, fmt, fix ci
+- bump
+- reuse allocated string buffer
+- make MSVC build by switching to duktape
+
 ### Fixed
 
 - Work around KaTeX rendering bug for `\backslash` that produced broken HTML (`&lt;/span&gt;`), triggering mdBook unclosed tag warnings.
