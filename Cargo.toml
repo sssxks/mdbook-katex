@@ -26,7 +26,7 @@ tracing-subscriber = { version = "0.3.22", default-features = false, features = 
     "env-filter",
     "fmt",
 ] }
-rayon = "1.11"
+rayon = "1.12"
 katex = { version = "0.4.6", default-features = false, optional = true }
 
 [features]
